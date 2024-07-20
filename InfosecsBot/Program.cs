@@ -33,25 +33,30 @@ public static class Program {
     }
 
     private static async Task NotificationThread() {
-        while (true) {
-            if (Config.NextCheck > DateTime.UtcNow)
-                await Task.Delay(Config.NextCheck - DateTime.UtcNow);
-            if (ObedManager.CurrentObed != null) {
-                await SendMessage("🍽 ПРОИЗОШЕЛ ОБЭД!!1! Все срочно идите жрать в столовку!");
-                Config.NextCheck = DateTime.UtcNow + ObedManager.CurrentObed.EndTime;
-                continue;
+        try {
+            while (true) {
+                if (Config.NextCheck > DateTime.UtcNow)
+                    await Task.Delay(Config.NextCheck - DateTime.UtcNow);
+                if (ObedManager.CurrentObed != null) {
+                    await SendMessage("🍽 ПРОИЗОШЕЛ ОБЭД!!1! Все срочно идите жрать в столовку!");
+                    Config.NextCheck = DateTime.UtcNow + ObedManager.CurrentObed.EndTime;
+                    continue;
+                }
+
+                var closest = ObedManager.ClosestObed;
+                var diff = closest - DateTime.UtcNow;
+                if (diff > TimeSpan.FromMinutes(30)) {
+                    Config.NextCheck = DateTime.UtcNow + Config.Interval;
+                    continue;
+                }
+
+                var timeLeft = (closest - ObedManager.CurrentTime).Humanize(precision: 2);
+                await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {timeLeft} в {closest:HH:mm}");
+                Config.NextCheck = DateTime.UtcNow +
+                                   (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
             }
-        
-            var closest = ObedManager.ClosestObed;
-            var diff = closest - DateTime.UtcNow;
-            if (diff > TimeSpan.FromMinutes(30)) {
-                Config.NextCheck = DateTime.UtcNow + Config.Interval;
-                continue;
-            }
-        
-            var timeLeft = (closest - DateTime.Now).Humanize(precision: 2);
-            await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {timeLeft} в {closest:HH:mm}");
-            Config.NextCheck = DateTime.UtcNow + (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
+        } catch (Exception e) {
+            Log.Error("Notification thread crashed: {0}", e);
         }
     }
 
