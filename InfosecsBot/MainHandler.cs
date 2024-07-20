@@ -16,6 +16,7 @@ public class MainHandler : UpdateHandler {
         if (current != null) {
             var endTime = (current.EndDate - ObedManager.CurrentTime).Humanize(precision: 2);
             await SendMessage($"🍽 Обэд кончится через {endTime} в {current.EndTime:hh\\:mm}");
+            return;
         }
         
         var timeLeft = (ObedManager.ClosestObed - ObedManager.CurrentTime).Humanize(precision: 2);

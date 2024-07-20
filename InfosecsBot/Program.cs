@@ -39,7 +39,7 @@ public static class Program {
                     await Task.Delay(Config.NextCheck - DateTime.UtcNow);
                 if (ObedManager.CurrentObed != null) {
                     await SendMessage("🍽 ПРОИЗОШЕЛ ОБЭД!!1! Все срочно идите жрать в столовку!");
-                    Config.NextCheck = DateTime.UtcNow + ObedManager.CurrentObed.EndTime;
+                    Config.NextCheck = ObedManager.CurrentTime + ObedManager.CurrentObed.EndTime;
                     continue;
                 }
 
