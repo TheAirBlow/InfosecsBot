@@ -15,7 +15,7 @@ public class ObedManager {
 
     public static DateTime ClosestObed => Obeds.Select(x => x.StartDate).MinBy(x => x - CurrentTime);
 
-    public static Obed? CurrentObed => Obeds.FirstOrDefault(x => CurrentTime > x.StartDate && CurrentTime < x.EndDate);
+    public static Obed? CurrentObed => Obeds.FirstOrDefault(x => CurrentTime.TimeOfDay > x.StartTime && CurrentTime.TimeOfDay < x.EndTime);
 }
 
 public class Obed {

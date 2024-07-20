@@ -44,7 +44,7 @@ public static class Program {
                 }
 
                 var closest = ObedManager.ClosestObed;
-                var diff = closest - DateTime.UtcNow;
+                var diff = closest - ObedManager.CurrentTime;
                 if (diff > TimeSpan.FromMinutes(30)) {
                     Config.NextCheck = DateTime.UtcNow + Config.Interval;
                     continue;
@@ -52,8 +52,7 @@ public static class Program {
 
                 var timeLeft = (closest - ObedManager.CurrentTime).Humanize(precision: 2);
                 await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {timeLeft} в {closest:HH:mm}");
-                Config.NextCheck = DateTime.UtcNow +
-                                   (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
+                Config.NextCheck = DateTime.UtcNow + (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
             }
         } catch (Exception e) {
             Log.Error("Notification thread crashed: {0}", e);
