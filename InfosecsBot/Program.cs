@@ -50,7 +50,8 @@ public static class Program {
                     continue;
                 }
                 
-                await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {closest - ObedManager.CurrentTime} в {closest:HH:mm}");
+                var timeLeft = (closest - ObedManager.CurrentTime).Humanize(precision: 2);
+                await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {timeLeft} в {closest:HH:mm}");
                 Config.NextCheck = ObedManager.CurrentTime + (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
             }
         } catch (Exception e) {
