@@ -11,7 +11,14 @@ public class ObedManager {
         new Obed(new TimeSpan(21, 00, 0), new TimeSpan(21, 30, 0)),
     ];
 
-    public static DateTime CurrentTime => DateTime.UtcNow.AddHours(Config.Timezone);
+    public static DateTime CurrentTime {
+        get {
+            var date = DateTime.UtcNow.AddHours(Config.Timezone);
+            date = date.AddTicks(-(date.Ticks % TimeSpan.TicksPerMillisecond));
+            date = date.AddTicks(-(date.Ticks % TimeSpan.TicksPerSecond));
+            return date;
+        }
+    }
 
     public static DateTime ClosestObed => Obeds.Select(x => x.StartDate).MinBy(x => x - CurrentTime);
 

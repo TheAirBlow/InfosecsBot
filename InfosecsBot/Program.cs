@@ -35,8 +35,8 @@ public static class Program {
     private static async Task NotificationThread() {
         try {
             while (true) {
-                if (Config.NextCheck > DateTime.UtcNow)
-                    await Task.Delay(Config.NextCheck - DateTime.UtcNow);
+                if (Config.NextCheck > ObedManager.CurrentTime)
+                    await Task.Delay(Config.NextCheck - ObedManager.CurrentTime);
                 if (ObedManager.CurrentObed != null) {
                     await SendMessage("🍽 ПРОИЗОШЕЛ ОБЭД!!1! Все срочно идите жрать в столовку!");
                     Config.NextCheck = ObedManager.CurrentTime + ObedManager.CurrentObed.EndTime;
@@ -46,13 +46,12 @@ public static class Program {
                 var closest = ObedManager.ClosestObed;
                 var diff = closest - ObedManager.CurrentTime;
                 if (diff > TimeSpan.FromMinutes(30)) {
-                    Config.NextCheck = DateTime.UtcNow + Config.Interval;
+                    Config.NextCheck = ObedManager.CurrentTime + Config.Interval;
                     continue;
                 }
-
-                var timeLeft = (closest - ObedManager.CurrentTime).Humanize(precision: 2);
-                await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {timeLeft} в {closest:HH:mm}");
-                Config.NextCheck = DateTime.UtcNow + (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
+                
+                await SendMessage($"🍽 СКОРО ОБЭД!!1! Будет через {closest - ObedManager.CurrentTime} в {closest:HH:mm}");
+                Config.NextCheck = ObedManager.CurrentTime + (TimeSpan.FromMinutes(10) > diff ? Config.Interval / 2 : Config.Interval);
             }
         } catch (Exception e) {
             Log.Error("Notification thread crashed: {0}", e);
