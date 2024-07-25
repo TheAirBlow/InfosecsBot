@@ -51,7 +51,7 @@ public class Configuration {
     /// <summary>
     /// Next obed check
     /// </summary>
-    public DateTime NextCheck { get; set; } = ObedManager.CurrentTime;
+    public DateTime NextCheck { get; set; } = DateTime.Now;
     
     /// <summary>
     /// Telegram bot token
